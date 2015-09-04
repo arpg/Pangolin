@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project( Pangolin )
+project( pangolin )
 set(PANGOLIN_VERSION_MAJOR 0)
 set(PANGOLIN_VERSION_MINOR 2)
 set(VERSION ${PANGOLIN_VERSION_MAJOR}.${PANGOLIN_VERSION_MINOR})
@@ -37,6 +37,16 @@ if( NOT CMAKE_BUILD_TYPE )
    message("-DCMAKE_BUILD_TYPE=Debug for debug")
    set( CMAKE_BUILD_TYPE Release )
 endif()
+
+if (COMMAND catkin_package)
+   catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES pangolin
+  CATKIN_DEPENDS 
+  DEPENDS ffmpeg libglew-dev glut
+  )
+endif()
+
 
 # Platform configuration vars
 include(SetPlatformVars)
@@ -253,9 +263,10 @@ endif()
 find_package(CVARS 2.3 QUIET)
 if(CVARS_FOUND)
   set(HAVE_CVARS 1)
-  list(APPEND USER_INC  ${CVars_INCLUDE_DIRS} )
-  list(APPEND LINK_LIBS ${CVars_LIBRARIES} )
+  list(APPEND USER_INC  ${CVARS_INCLUDE_DIRS} )
+  list(APPEND LINK_LIBS ${CVARS_LIBRARIES} )
   message(STATUS "CVARS Found and Enabled")
+  message(STATUS "UserInc: ${CVARS_INCLUDE_DIRS}")
 endif()
 
 find_package(Oculus QUIET)
@@ -396,11 +407,14 @@ list( APPEND PANGOLIN_HDRS ${IOS_HEADERS} ${VIDEO_HEADERS} ${COMPAT_HEADERS} )
 include_directories( ${REQUIRED_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR}/include )
 include_directories( ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR} )
 
+include_directories(include)
+
 # Include PANGOLIN_HDRS so we can see them in QtCreator.
 add_library( pangolin ${PANGOLIN_SRCS} ${PANGOLIN_HDRS} )
 target_link_libraries( pangolin ${REQUIRED_LIBRARIES} )
 
-install_package(
+if(NOT COMMAND catkin_package)
+       install_package(
     PKG_NAME Pangolin
     LIB_NAME pangolin
     VERSION ${VERSION}
@@ -411,6 +425,9 @@ install_package(
     INCLUDE_DIRS ${REQUIRED_INCLUDE_DIRS}
     LINK_LIBS ${REQUIRED_LIBRARIES}
     )
+
+endif()
+
 
 
 #######################################################
