@@ -168,6 +168,12 @@ function(install_package)
         # own examples or applcations in this project.
         configure_file( ${CMAKE_SOURCE_DIR}/cmake_modules/PackageConfig.cmake.in
             ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Config.cmake @ONLY )
+
+	if(POLICY CMP0062)
+	   cmake_policy( SET CMP0062 OLD )
+	endif()
+
+
         install(FILES
             ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Config.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Targets.cmake
