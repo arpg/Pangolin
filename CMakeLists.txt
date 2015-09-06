@@ -38,18 +38,13 @@ if( NOT CMAKE_BUILD_TYPE )
    set( CMAKE_BUILD_TYPE Release )
 endif()
 
-if (COMMAND catkin_package)
-   catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES pangolin
-  CATKIN_DEPENDS 
-  DEPENDS ffmpeg libglew-dev glut
-  )
-endif()
-
-
 # Platform configuration vars
 include(SetPlatformVars)
+
+if (COMMAND catkin_package)
+  # Install catkin package.xml
+  install(FILES package.xml DESTINATION share/pangolin)
+endif()
 
 set( INCDIR "${CMAKE_CURRENT_SOURCE_DIR}/include/pangolin")
 set( SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/src" )
@@ -451,7 +446,6 @@ if(MSVC)
 elseif(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations ${CMAKE_CXX_FLAGS}")
 endif()
-
 #######################################################
 ## Generate Doxygen documentation target (make doc)
 find_package(Doxygen)

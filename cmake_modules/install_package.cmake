@@ -10,7 +10,7 @@
 
 #
 # install_package - Takes a package name and the following optional named arguments:
-#  PKG_NAME <name of the package for pkg-config>, usually the same as ${PROJECT_NAME}
+#  PKG_NAME <name of the package for pkg-config>, usually the same as ${PACKAGE_PKG_NAME}
 #  LIB_NAME <name of a library to build, if any>
 #  VERSION <version>
 #  INSTALL_HEADERS <header files to install, if any>
@@ -53,10 +53,10 @@ function(install_package)
     )
 
   # Add package to CMake package registery for use from the build tree. RISKY.
-  option( EXPORT_${PROJECT_NAME}
-      "Should the ${PROJECT_NAME} package be exported for use by other software" OFF )
+  option( EXPORT_${PACKAGE_PKG_NAME}
+      "Should the ${PACKAGE_PKG_NAME} package be exported for use by other software" OFF )
 
-  mark_as_advanced( EXPORT_${PROJECT_NAME} )
+  mark_as_advanced( EXPORT_${PACKAGE_PKG_NAME} )
 
 
   # clean things up 
@@ -94,7 +94,7 @@ function(install_package)
   endif()
 
   # In case we want to install. 
-  if( NOT EXPORT_${PROJECT_NAME} )
+  if( NOT EXPORT_${PACKAGE_PKG_NAME} )
         # add "installed" library to list of required libraries to link against
         if( PACKAGE_LIB_NAME )
             if(POLICY CMP0026)
@@ -156,24 +156,24 @@ function(install_package)
         #######################################################
         # Export library for easy inclusion from other cmake projects. APPEND allows
         # call to function even as subdirectory of larger project.
-        FILE(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
+        FILE(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Targets.cmake")
         export( TARGETS ${LIBRARY_NAME}
-        APPEND FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake" )
+        APPEND FILE "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Targets.cmake" )
 
         # Version information.  So find_package( XXX version ) will work.
         configure_file( ${CMAKE_SOURCE_DIR}/cmake_modules/PackageConfigVersion.cmake.in
-        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" @ONLY )
+        "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}ConfigVersion.cmake" @ONLY )
 
         # Build tree config.  So some folks can use the built package (e.g., any of our
         # own examples or applcations in this project.
         configure_file( ${CMAKE_SOURCE_DIR}/cmake_modules/PackageConfig.cmake.in
-            ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake @ONLY )
+            ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Config.cmake @ONLY )
         install(FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-            ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake
-            ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Config.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Targets.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}ConfigVersion.cmake
             DESTINATION
-            lib/cmake/${PROJECT_NAME})
+            lib/cmake/${PACKAGE_PKG_NAME})
 
         install( FILES ${CMAKE_CURRENT_BINARY_DIR}/Find${PACKAGE_PKG_NAME}.cmake 
             DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${PACKAGE_PKG_NAME}/ )
@@ -183,12 +183,12 @@ function(install_package)
   #  pkg-config.
   #  set( EXPORT_LIB_INC_DIR ${LIB_INC_DIR} )
   #  set( EXPORT_LIB_INC_DIR "\${PROJECT_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
-  #  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
-  #      ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake @ONLY )
+  #  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_PKG_NAME}Config.cmake.in
+  #      ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PACKAGE_PKG_NAME}Config.cmake @ONLY )
         endif()
 
   # In case we want to export.
-  elseif( EXPORT_${PROJECT_NAME} )
+  elseif( EXPORT_${PACKAGE_PKG_NAME} )
 
       if( PACKAGE_LIB_NAME )
             if(POLICY CMP0026)
@@ -221,32 +221,32 @@ function(install_package)
    #######################################################
   # Export library for easy inclusion from other cmake projects. APPEND allows
   # call to function even as subdirectory of larger project.
-  FILE(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
+  FILE(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Targets.cmake")
   export( TARGETS ${LIBRARY_NAME}
-      APPEND FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake" )
+      APPEND FILE "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Targets.cmake" )
 
-  export( PACKAGE ${PROJECT_NAME} )
-#  install( EXPORT ${PROJECT_NAME}Targets DESTINATION ${CMAKECONFIG_INSTALL_DIR} )
+  export( PACKAGE ${PACKAGE_PKG_NAME} )
+#  install( EXPORT ${PACKAGE_PKG_NAME}Targets DESTINATION ${CMAKECONFIG_INSTALL_DIR} )
 #  install(TARGETS ${LIBRARY_NAME}
-#      EXPORT ${PROJECT_NAME}Targets DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+#      EXPORT ${PACKAGE_PKG_NAME}Targets DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
 #      )
 
   # Version information.  So find_package( XXX version ) will work.
   configure_file( ${CMAKE_SOURCE_DIR}/cmake_modules/PackageConfigVersion.cmake.in
-      "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" @ONLY )
+      "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}ConfigVersion.cmake" @ONLY )
 
   # Build tree config.  So some folks can use the built package (e.g., any of our
   # own examples or applcations in this project.
   configure_file( ${CMAKE_SOURCE_DIR}/cmake_modules/PackageConfig.cmake.in
-      ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake @ONLY )
+      ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_PKG_NAME}Config.cmake @ONLY )
   
   #  # Install tree config.  NB we DO NOT use this.  We install using brew or
   #  pkg-config.
   #  set( EXPORT_LIB_INC_DIR ${LIB_INC_DIR} )
   #  set( EXPORT_LIB_INC_DIR "\${PROJECT_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
-  #  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
-  #      ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake @ONLY )
-    #export( PACKAGE ${PROJECT_NAME} )
+  #  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_PKG_NAME}Config.cmake.in
+  #      ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PACKAGE_PKG_NAME}Config.cmake @ONLY )
+    #export( PACKAGE ${PACKAGE_PKG_NAME} )
   endif()
 
 
