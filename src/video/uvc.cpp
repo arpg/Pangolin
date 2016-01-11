@@ -85,6 +85,16 @@ void UvcVideo::Start()
         uvc_unref_device(dev_);
         throw VideoException("Unable to start iso streaming.");
     }
+    uvc_stream_handle_t *strmh;
+
+    stream_err = uvc_stream_open_ctrl(devh_, &strmh_, &ctrl_);
+    if (stream_err != UVC_SUCCESS)
+      {
+	uvc_perror(stream_err, "uvc_stream_open_ctrl");
+        uvc_close(devh_);
+        uvc_unref_device(dev_);
+        throw VideoException("Unable to start iso streaming.");
+      }
     
     if (frame_) {
         uvc_free_frame(frame_);
@@ -117,7 +127,12 @@ const std::vector<StreamInfo>& UvcVideo::Streams() const
 bool UvcVideo::GrabNext( unsigned char* image, bool wait )
 {
     uvc_frame_t* frame = NULL;
-    uvc_error_t err = uvc_get_frame(devh_, &frame, 0);
+
+    uvc_error_t err;
+    if (wait)
+      err = uvc_stream_get_frame(strmh_, &frame,0);
+    else
+      err = uvc_stream_get_frame(strmh_, &frame,-1);
     
     if(err!= UVC_SUCCESS) {
         uvc_perror(err, "uvc_get_frame");

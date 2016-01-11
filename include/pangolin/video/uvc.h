@@ -71,6 +71,7 @@ protected:
     uvc_device*  dev_;
     uvc_device_handle*  devh_;
     uvc_stream_ctrl_t ctrl_;
+    uvc_stream_handle_t *strmh_;
     uvc_frame_t* frame_;
 };
 
