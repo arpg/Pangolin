@@ -223,7 +223,8 @@ else()
       endif()
     endif()
 
-    # Prefer OSX_MODIFIED_GLUT > FREEGLUT > GLUT
+    # FREEGLUT > GLUT
+    # Use modified OS X Glut if no freeglut is around.
     if(FREEGLUT_FOUND)
       if(HAVE_MODIFIED_OSXGLUT)
         message(WARNING "Modified OSXGlut has been deprecated; please use FreeGLUT")
