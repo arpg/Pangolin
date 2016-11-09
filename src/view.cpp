@@ -361,6 +361,14 @@ GLfloat View::GetClosestDepth(int x, int y, int radius) const
     return mindepth;
 }
 
+void View::GetImageCoordinates(const OpenGlRenderState& cam_state, GLdouble& winx, GLdouble& winy, GLdouble& winzdepth, double x, double y, double z) const
+{
+    const GLint viewport[4] = {v.l,v.b,v.w,v.h};
+    const OpenGlMatrix proj = cam_state.GetProjectionMatrix();
+    const OpenGlMatrix mv = cam_state.GetModelViewMatrix();
+    glProject(x, y, z, mv.m, proj.m, viewport, &winx, &winy, &winzdepth);
+}
+
 void View::GetObjectCoordinates(const OpenGlRenderState& cam_state, double winx, double winy, double winzdepth, GLdouble& x, GLdouble& y, GLdouble& z) const
 {
     const GLint viewport[4] = {v.l,v.b,v.w,v.h};
