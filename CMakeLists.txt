@@ -223,9 +223,12 @@ else()
       endif()
     endif()
 
-    # Prefer OSX_MODIFIED_GLUT > FREEGLUT > GLUT
-    option(FORCE_FREEGLUT "Force use of freeglut if found." OFF)
-    if(FREEGLUT_FOUND AND (NOT HAVE_MODIFIED_OSXGLUT OR FORCE_FREEGLUT))
+    # FREEGLUT > GLUT
+    # Use modified OS X Glut if no freeglut is around.
+    if(FREEGLUT_FOUND)
+      if(HAVE_MODIFIED_OSXGLUT)
+        message(WARNING "Modified OSXGlut has been deprecated; please use FreeGLUT")
+      endif()
       set(HAVE_FREEGLUT 1)
       list(APPEND USER_INC  ${FREEGLUT_INCLUDE_DIR} )
       list(APPEND LINK_LIBS ${FREEGLUT_LIBRARY} )
