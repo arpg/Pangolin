@@ -91,7 +91,7 @@ protected:
     AVPacket        packet;
     int             numBytesOut;
     uint8_t         *buffer;
-    PixelFormat     fmtout;
+    AVPixelFormat     fmtout;
 };
 
 enum FfmpegMethod
@@ -139,8 +139,8 @@ protected:
     VideoInterface* videoin;
     SwsContext *img_convert_ctx;
     
-    PixelFormat     fmtsrc;
-    PixelFormat     fmtdst;
+    AVPixelFormat     fmtsrc;
+    AVPixelFormat     fmtdst;
     AVFrame*        avsrc;
     AVFrame*        avdst;
     uint8_t*        bufsrc;
@@ -159,12 +159,12 @@ class PANGOLIN_EXPORT FfmpegVideoOutputStream
     : public VideoOutputStreamInterface
 {
 public:
-    FfmpegVideoOutputStream(FfmpegVideoOutput& recorder, CodecID codec_id, uint64_t frame_rate, int bit_rate, PixelFormat EncoderFormat, int width, int height );
+    FfmpegVideoOutputStream(FfmpegVideoOutput& recorder, CodecID codec_id, uint64_t frame_rate, int bit_rate, AVPixelFormat EncoderFormat, int width, int height );
     ~FfmpegVideoOutputStream();
     
     void WriteAvPacket(AVPacket* pkt);
     void WriteFrame(AVFrame* frame);
-    void WriteImage(AVPicture& src_picture, int w, int h, PixelFormat fmt, int64_t pts);
+    void WriteImage(AVPicture& src_picture, int w, int h, AVPixelFormat fmt, int64_t pts);
     void WriteImage(uint8_t* img, int w, int h, const std::string& input_format, int64_t pts);
     void WriteImage(uint8_t* img, int w, int h, const std::string& input_format, double time);
     

@@ -37,18 +37,18 @@ extern "C"
 namespace pangolin
 {
 
-PixelFormat FfmpegFmtFromString(const std::string fmt)
+AVPixelFormat FfmpegFmtFromString(const std::string fmt)
 {
     const std::string lfmt = ToLowerCopy(fmt);
     if(!lfmt.compare("gray8") || !lfmt.compare("grey8") || !lfmt.compare("grey")) {
-        return PIX_FMT_GRAY8;
+        return AV_PIX_FMT_GRAY8;
     }
     return av_get_pix_fmt(lfmt.c_str());
 }
 
-#define TEST_PIX_FMT_RETURN(fmt) case PIX_FMT_##fmt: return #fmt;
+#define TEST_PIX_FMT_RETURN(fmt) case AV_PIX_FMT_##fmt: return #fmt;
 
-std::string FfmpegFmtToString(const PixelFormat fmt)
+std::string FfmpegFmtToString(const AVPixelFormat fmt)
 {
     switch( fmt )
     {
@@ -224,15 +224,15 @@ void FfmpegVideo::InitUrl(const std::string url, const std::string strfmtout, co
         pVidCodecCtx->time_base.den=1000;
     
     // Allocate video frame
-    pFrame=avcodec_alloc_frame();
+    pFrame=av_frame_alloc();
     
     // Allocate an AVFrame structure
-    pFrameOut=avcodec_alloc_frame();
+    pFrameOut=av_frame_alloc();
     if(pFrameOut==0)
         throw VideoException("Couldn't allocate frame");
     
     fmtout = FfmpegFmtFromString(strfmtout);
-    if(fmtout == PIX_FMT_NONE )
+    if(fmtout == AV_PIX_FMT_NONE )
         throw VideoException("Output format not recognised",strfmtout);
     
     // Image dimensions
@@ -364,8 +364,8 @@ FfmpegConverter::FfmpegConverter(VideoInterface* videoin, const std::string sfmt
     numbytesdst=avpicture_get_size(fmtdst, w, h);
     bufsrc  = new uint8_t[numbytessrc];
     bufdst  = new uint8_t[numbytesdst];
-    avsrc = avcodec_alloc_frame();
-    avdst = avcodec_alloc_frame();
+    avsrc = av_frame_alloc();
+    avdst = av_frame_alloc();
     avpicture_fill((AVPicture*)avsrc,bufsrc,fmtsrc,w,h);
     avpicture_fill((AVPicture*)avdst,bufdst,fmtdst,w,h);
     
@@ -436,7 +436,7 @@ bool FfmpegConverter::GrabNewest( unsigned char* image, bool wait )
 
 // Based on this example
 // http://cekirdek.pardus.org.tr/~ismail/ffmpeg-docs/output-example_8c-source.html
-static AVStream* CreateStream(AVFormatContext *oc, CodecID codec_id, uint64_t frame_rate, int bit_rate, PixelFormat EncoderFormat, int width, int height)
+static AVStream* CreateStream(AVFormatContext *oc, CodecID codec_id, uint64_t frame_rate, int bit_rate, AVPixelFormat EncoderFormat, int width, int height)
 {
     AVCodec* codec = avcodec_find_encoder(codec_id);
     if (!(codec)) throw
@@ -541,11 +541,11 @@ void FfmpegVideoOutputStream::WriteFrame(AVFrame* frame)
     av_free_packet(&pkt);
 }
 
-void FfmpegVideoOutputStream::WriteImage(AVPicture& src_picture, int w, int h, PixelFormat fmt, int64_t pts)
+void FfmpegVideoOutputStream::WriteImage(AVPicture& src_picture, int w, int h, AVPixelFormat fmt, int64_t pts)
 {
     AVCodecContext *c = stream->codec;
     
-    AVFrame* frame = avcodec_alloc_frame();
+    AVFrame* frame = av_frame_alloc();
     frame->pts = pts;
     frame->width = w;
     frame->height = h;
@@ -576,7 +576,7 @@ void FfmpegVideoOutputStream::WriteImage(uint8_t* img, int w, int h, const std::
 {
     recorder.StartStream();
     
-    PixelFormat fmt = FfmpegFmtFromString(input_fmt);
+    AVPixelFormat fmt = FfmpegFmtFromString(input_fmt);
     AVPicture picture;
     
     if(h < 0) {
@@ -604,7 +604,7 @@ double FfmpegVideoOutputStream::BaseFrameTime()
     return (double)stream->codec->time_base.num / (double)stream->codec->time_base.den;
 }
 
-FfmpegVideoOutputStream::FfmpegVideoOutputStream(FfmpegVideoOutput& recorder, CodecID codec_id, uint64_t frame_rate, int bit_rate, PixelFormat EncoderFormat, int width, int height )
+FfmpegVideoOutputStream::FfmpegVideoOutputStream(FfmpegVideoOutput& recorder, CodecID codec_id, uint64_t frame_rate, int bit_rate, AVPixelFormat EncoderFormat, int width, int height )
     : recorder(recorder), last_pts(-1), sws_ctx(NULL)
 {
     int ret;

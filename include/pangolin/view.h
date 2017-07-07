@@ -94,6 +94,9 @@ struct PANGOLIN_EXPORT View
     
     //! Return closest depth buffer value within radius of window (winx,winy)
     GLfloat GetClosestDepth(int winx, int winy, int radius) const;
+
+    //! Obtain image coordinates of scene at object space coordinates (x, y, z)
+    void GetImageCoordinates(const OpenGlRenderState& cam_state, GLdouble& winx, GLdouble& winy, GLdouble& winzdepth, double x, double y, double z) const;
     
     //! Obtain camera space coordinates of scene at pixel (winx, winy, winzdepth)
     //! winzdepth can be obtained from GetClosestDepth

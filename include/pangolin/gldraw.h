@@ -274,6 +274,13 @@ inline void glDrawLine( const Eigen::Vector2d& p1, const Eigen::Vector2d& p2 )
     glDrawLine((GLfloat)p1(0), (GLfloat)p1(1), (GLfloat)p2(0), (GLfloat)p2(1));
 }
 
+inline void glDrawLine3D( const Eigen::Vector3d& p1, const Eigen::Vector3d& p2 )
+{
+    glDrawLine((GLfloat)p1(0), (GLfloat)p1(1), (GLfloat)p1(2),
+               (GLfloat)p2(0), (GLfloat)p2(1), (GLfloat)p2(2));
+}
+
+
 inline void glDrawCross( const Eigen::Vector2d& p, double r = 5.0 )
 {
     glDrawCross((GLfloat)p(0), (GLfloat)p(1), (GLfloat)r);
